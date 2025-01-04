@@ -4,10 +4,23 @@ A minimal sliding toggle button SwiftUI Swift Package library.
 
 ![SlidingToggleButton_Preview.png](.//Docs/SlidingToggleButton_Preview.png)
 
+<video src=".//Docs/SlidingToggleButton_Animation.mp4" width="100%"></video>
+
 ## Specifications
 
-![SlidingToggleButton_Measurements.png](.//Docs/SlidingToggleButton_Measurements.png)
+![SlidingToggleButton_Specs.png](.//Docs/SlidingToggleButton_Specs.png)
 
+## Measurements (Horizontal)
+
+![SlidingToggleButton_Horizontal_Measurements.png](.//Docs/SlidingToggleButton_Horizontal_Measurements.png)
+
+## Measurements (Vertical)
+
+![SlidingToggleButton_Vertical_Measurements.png](.//Docs/SlidingToggleButton_Vertical_Measurements.png)
+
+## Colors
+
+![SlidingToggleButton_Colors.png](.//Docs/SlidingToggleButton_Colors.png)
 
 ## Installation
 
@@ -30,15 +43,13 @@ struct ContentView: View {
         HStack {
             // Horizontal Sliding Toggle Button
             SlidingToggleButton(
-                isToggled: $isDarkMode,
-                size: 20,
+                value: $isDarkMode,
                 startIconName: "sun.max.fill",
                 endIconName: "moon.fill"
             )
             // Vertical Sliding Toggle Button
             SlidingToggleButton(
-                isToggled: $isDarkMode,
-                size: 20,
+                value: $isDarkMode,
                 vertical: true,
                 startIconName: "sun.max.fill",
                 endIconName: "moon.fill"

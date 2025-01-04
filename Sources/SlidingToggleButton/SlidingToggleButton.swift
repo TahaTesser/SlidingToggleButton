@@ -9,8 +9,7 @@ public class SlidingToggleButtonDefaults {
 }
 
 public struct SlidingToggleButton: View {
-    @Binding var isToggled: Bool
-
+    @Binding private var value: Bool
     @State private var buttonAlignment: Alignment
     @State private var animateStartIcon: Bool = false
     @State private var animateEndIcon: Bool = false
@@ -24,7 +23,7 @@ public struct SlidingToggleButton: View {
     let endIconName: String
 
     public init(
-        isToggled: Binding<Bool>,
+        value: Binding<Bool>,
         size: CGFloat? = nil,
         padding: CGFloat? = nil,
         backgroundColor: Color? = nil,
@@ -37,13 +36,14 @@ public struct SlidingToggleButton: View {
         let effectiveVertical = vertical ?? SlidingToggleButtonDefaults.vertical
         let effectivePadding = padding ?? SlidingToggleButtonDefaults.padding
 
+        _value = value
+
         if effectiveVertical {
-            _buttonAlignment = State(initialValue: .top)
+            _buttonAlignment = State(initialValue: value.wrappedValue ? .top : .bottom)
         } else {
-            _buttonAlignment = State(initialValue: .leading)
+            _buttonAlignment = State(initialValue: value.wrappedValue ? .leading : .trailing)
         }
 
-        _isToggled = isToggled
         self.size = effectiveSize
         self.padding = effectivePadding
         self.backgroundColor = backgroundColor ?? SlidingToggleButtonDefaults.backgroundColor
@@ -61,7 +61,19 @@ public struct SlidingToggleButton: View {
                     width: size + (padding * 2),
                     height: size + (padding * 2)
                 )
-                .animation(.spring(response: 0.3), value: isToggled)
+                .onChange(of: value) {
+                    withAnimation(.spring(response: 0.3)) {
+                        switch value {
+                        case true:
+                            buttonAlignment = vertical ? .top : .leading
+                            animateStartIcon.toggle()
+                        case false:
+                            buttonAlignment = vertical ? .bottom : .trailing
+                            animateEndIcon.toggle()
+                        }
+                        
+                    }
+                }
 
             flexibleStack(vertical: vertical, spacing: 0) {
                 Image(systemName: startIconName)
@@ -83,7 +95,7 @@ public struct SlidingToggleButton: View {
                                 buttonAlignment = .leading
                             }
                             animateStartIcon.toggle()
-                            isToggled = true
+                            value = true
                         }
                     }
 
@@ -106,7 +118,7 @@ public struct SlidingToggleButton: View {
                                 buttonAlignment = .trailing
                             }
                             animateEndIcon.toggle()
-                            isToggled = false
+                            value = false
                         }
                     }
             }
@@ -133,25 +145,41 @@ public struct SlidingToggleButton: View {
 
 #Preview(traits: .sizeThatFitsLayout) {
     struct PreviewWrapper: View {
-        @State private var isDarkMode = false
+        @State private var isDarkMode = true
+        @State private var timer: Timer?
 
         var body: some View {
             HStack {
                 // Horizontal Sliding Toggle Button
                 SlidingToggleButton(
-                    isToggled: $isDarkMode,
+                    value: $isDarkMode,
                     startIconName: "sun.max.fill",
                     endIconName: "moon.fill"
                 )
                 // Vertical Sliding Toggle Button
                 SlidingToggleButton(
-                    isToggled: $isDarkMode,
+                    value: $isDarkMode,
                     vertical: true,
                     startIconName: "sun.max.fill",
                     endIconName: "moon.fill"
                 )
             }
             .padding()
+            .onAppear {
+                // Schedule a timer and dispatch toggling back to the main actor
+                timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                    Task { @MainActor in
+                        isDarkMode.toggle()
+
+                        print(isDarkMode)
+                    }
+                }
+            }
+            .onDisappear {
+                // Invalidate the timer if you don’t want it to keep firing
+                timer?.invalidate()
+                timer = nil
+            }
         }
     }
 
