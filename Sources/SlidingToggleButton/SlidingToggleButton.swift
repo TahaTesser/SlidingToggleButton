@@ -11,8 +11,7 @@ public class SlidingToggleButtonDefaults {
 public struct SlidingToggleButton: View {
     @Binding var isToggled: Bool
 
-    @State private var buttonShapePositionX: CGFloat = 0
-    @State private var buttonShapePositionY: CGFloat = 0
+    @State private var buttonAlignment: Alignment
     @State private var animateStartIcon: Bool = false
     @State private var animateEndIcon: Bool = false
 
@@ -39,7 +38,9 @@ public struct SlidingToggleButton: View {
         let effectivePadding = padding ?? SlidingToggleButtonDefaults.padding
 
         if effectiveVertical {
-            _buttonShapePositionY = State(initialValue: -effectiveSize + effectivePadding)
+            _buttonAlignment = State(initialValue: .top)
+        } else {
+            _buttonAlignment = State(initialValue: .leading)
         }
 
         _isToggled = isToggled
@@ -53,16 +54,12 @@ public struct SlidingToggleButton: View {
     }
 
     public var body: some View {
-        ZStack(alignment: .leading) {
+        ZStack(alignment: buttonAlignment) {
             Circle()
                 .fill(buttonBackgroundColor)
                 .frame(
                     width: size + (padding * 2),
                     height: size + (padding * 2)
-                )
-                .offset(
-                    x: buttonShapePositionX,
-                    y: buttonShapePositionY
                 )
                 .animation(.spring(response: 0.3), value: isToggled)
 
@@ -80,13 +77,12 @@ public struct SlidingToggleButton: View {
 
                     .onTapGesture {
                         withAnimation(.spring(response: 0.3)) {
-                            animateStartIcon.toggle()
                             if vertical {
-                                buttonShapePositionY = -size + padding
+                                buttonAlignment = .top
                             } else {
-                                buttonShapePositionX = 0
+                                buttonAlignment = .leading
                             }
-
+                            animateStartIcon.toggle()
                             isToggled = true
                         }
                     }
@@ -105,9 +101,9 @@ public struct SlidingToggleButton: View {
                     .onTapGesture {
                         withAnimation(.spring(response: 0.3)) {
                             if vertical {
-                                buttonShapePositionY = size - padding
+                                buttonAlignment = .bottom
                             } else {
-                                buttonShapePositionX = size + (padding * 2)
+                                buttonAlignment = .trailing
                             }
                             animateEndIcon.toggle()
                             isToggled = false
@@ -141,18 +137,23 @@ public struct SlidingToggleButton: View {
 
         var body: some View {
             HStack {
+                // Horizontal Sliding Toggle Button
                 SlidingToggleButton(
                     isToggled: $isDarkMode,
+                    size: 20,
                     startIconName: "sun.max.fill",
                     endIconName: "moon.fill"
                 )
+                // Vertical Sliding Toggle Button
                 SlidingToggleButton(
                     isToggled: $isDarkMode,
+                    size: 20,
                     vertical: true,
                     startIconName: "sun.max.fill",
                     endIconName: "moon.fill"
                 )
             }
+            .padding()
         }
     }
 
