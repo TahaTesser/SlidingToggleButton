@@ -12,6 +12,10 @@ struct SlidingToggleButtonExampleApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .containerBackground(.thinMaterial, for: .window)
+                .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
         }
+        .windowStyle(.hiddenTitleBar)
+        .windowBackgroundDragBehavior(.enabled)
     }
 }
