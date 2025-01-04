@@ -2,7 +2,12 @@
 
 A minimal sliding toggle button SwiftUI Swift Package library.
 
-![SlidingToggleButton_Preview.png](./SlidingToggleButton_Preview.png)
+![SlidingToggleButton_Preview.png](.//Docs/SlidingToggleButton_Preview.png)
+
+## Specifications
+
+![SlidingToggleButton_Measurements.png](.//Docs/SlidingToggleButton_Measurements.png)
+
 
 ## Installation
 
