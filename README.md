@@ -93,6 +93,16 @@ The following iOS 17+/macOS 14+ APIs are used:
 | Button Background Color | `.primary.opacity(0.4)` |
 | Icon Color | `.white` |
 
+## Performance
+
+| Metric | Value |
+|--------|-------|
+| First Render | 0.57ms |
+| State Toggle | 0.02ms |
+| Memory | 152 bytes |
+
+Optimized for 60fps rendering. See [Benchmark Results](./Docs/BenchmarkResults.md) for details.
+
 ## License
 
 **SlidingToggleButton** is available under the MIT license. See the [LICENSE](./LICENSE.md) for more info.

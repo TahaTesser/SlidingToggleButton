@@ -5,115 +5,27 @@ import Testing
 @Suite("SlidingToggleButton Benchmark Tests")
 struct SlidingToggleButtonBenchmarkTests {
 
-    // MARK: - Initialization Benchmarks
-
-    @Test("Benchmark: Minimal Initialization (1000 iterations)")
-    func benchmarkMinimalInitialization() {
+    @Test("Benchmark: First Render Time")
+    func benchmarkFirstRenderTime() {
         var value = false
         let binding = Binding(get: { value }, set: { value = $0 })
 
         let startTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<1000 {
-            _ = SlidingToggleButton(
-                value: binding,
-                startIconName: "sun.max.fill",
-                endIconName: "moon.fill"
-            )
-        }
-        let endTime = CFAbsoluteTimeGetCurrent()
-        let elapsed = (endTime - startTime) * 1000
-
-        print("Minimal Initialization (1000x): \(String(format: "%.2f", elapsed))ms")
-        #expect(elapsed < 1000, "Initialization should complete in under 1 second")
-    }
-
-    @Test("Benchmark: Full Custom Initialization (1000 iterations)")
-    func benchmarkFullCustomInitialization() {
-        var value = false
-        let binding = Binding(get: { value }, set: { value = $0 })
-
-        let startTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<1000 {
-            _ = SlidingToggleButton(
-                value: binding,
-                size: 48,
-                padding: 16,
-                backgroundColor: .red,
-                buttonBackgroundColor: .blue,
-                vertical: true,
-                startIconName: "star.fill",
-                endIconName: "heart.fill"
-            )
-        }
-        let endTime = CFAbsoluteTimeGetCurrent()
-        let elapsed = (endTime - startTime) * 1000
-
-        print("Full Custom Initialization (1000x): \(String(format: "%.2f", elapsed))ms")
-        #expect(elapsed < 1000, "Initialization should complete in under 1 second")
-    }
-
-    @Test("Benchmark: Horizontal vs Vertical Initialization")
-    func benchmarkOrientationInitialization() {
-        var value = false
-        let binding = Binding(get: { value }, set: { value = $0 })
-
-        // Horizontal
-        let horizontalStart = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<1000 {
-            _ = SlidingToggleButton(
-                value: binding,
-                vertical: false,
-                startIconName: "sun.max.fill",
-                endIconName: "moon.fill"
-            )
-        }
-        let horizontalEnd = CFAbsoluteTimeGetCurrent()
-        let horizontalElapsed = (horizontalEnd - horizontalStart) * 1000
-
-        // Vertical
-        let verticalStart = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<1000 {
-            _ = SlidingToggleButton(
-                value: binding,
-                vertical: true,
-                startIconName: "sun.max.fill",
-                endIconName: "moon.fill"
-            )
-        }
-        let verticalEnd = CFAbsoluteTimeGetCurrent()
-        let verticalElapsed = (verticalEnd - verticalStart) * 1000
-
-        print("Horizontal Initialization (1000x): \(String(format: "%.2f", horizontalElapsed))ms")
-        print("Vertical Initialization (1000x): \(String(format: "%.2f", verticalElapsed))ms")
-
-        #expect(horizontalElapsed < 1000, "Horizontal initialization should complete in under 1 second")
-        #expect(verticalElapsed < 1000, "Vertical initialization should complete in under 1 second")
-    }
-
-    @Test("Benchmark: State Toggle Binding Updates (10000 iterations)")
-    func benchmarkBindingUpdates() {
-        var value = false
-        let binding = Binding(get: { value }, set: { value = $0 })
-
-        _ = SlidingToggleButton(
+        let button = SlidingToggleButton(
             value: binding,
             startIconName: "sun.max.fill",
             endIconName: "moon.fill"
         )
-
-        let startTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<10000 {
-            value.toggle()
-        }
+        _ = button.body
         let endTime = CFAbsoluteTimeGetCurrent()
         let elapsed = (endTime - startTime) * 1000
 
-        print("Binding Updates (10000x): \(String(format: "%.2f", elapsed))ms")
-        #expect(elapsed < 500, "Binding updates should complete in under 500ms")
+        print("First Render Time: \(String(format: "%.3f", elapsed))ms")
+        #expect(elapsed < 16.67, "First render should complete within one frame (16.67ms at 60fps)")
     }
 
-    @Test("Benchmark: Body Generation")
-    func benchmarkBodyGeneration() {
+    @Test("Benchmark: View Hierarchy Depth")
+    func benchmarkViewHierarchyDepth() {
         var value = false
         let binding = Binding(get: { value }, set: { value = $0 })
 
@@ -123,57 +35,71 @@ struct SlidingToggleButtonBenchmarkTests {
             endIconName: "moon.fill"
         )
 
+        let bodyDescription = String(describing: button.body)
+        let depth = bodyDescription.components(separatedBy: "(").count - 1
+
+        print("View Hierarchy Depth: \(depth) levels")
+        #expect(depth < 250, "View hierarchy should not be excessively deep")
+    }
+
+    @Test("Benchmark: Memory Footprint")
+    func benchmarkMemoryFootprint() {
+        let instanceSize = MemoryLayout<SlidingToggleButton>.size
+        let instanceStride = MemoryLayout<SlidingToggleButton>.stride
+        let instanceAlignment = MemoryLayout<SlidingToggleButton>.alignment
+
+        print("Instance Size: \(instanceSize) bytes")
+        print("Instance Stride: \(instanceStride) bytes")
+        print("Instance Alignment: \(instanceAlignment) bytes")
+
+        #expect(instanceSize < 512, "Instance should be under 512 bytes")
+    }
+
+    @Test("Benchmark: State Toggle Latency")
+    func benchmarkStateToggleLatency() {
+        var value = false
+        let binding = Binding(get: { value }, set: { value = $0 })
+
+        let button = SlidingToggleButton(
+            value: binding,
+            startIconName: "sun.max.fill",
+            endIconName: "moon.fill"
+        )
+        _ = button.body
+
         let startTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<100 {
+        value = true
+        _ = button.body
+        let endTime = CFAbsoluteTimeGetCurrent()
+        let elapsed = (endTime - startTime) * 1000
+
+        print("State Toggle Latency: \(String(format: "%.3f", elapsed))ms")
+        #expect(elapsed < 16.67, "State toggle should complete within one frame (16.67ms at 60fps)")
+    }
+
+    @Test("Benchmark: Rapid Toggle Stability")
+    func benchmarkRapidToggleStability() {
+        var value = false
+        let binding = Binding(get: { value }, set: { value = $0 })
+
+        let button = SlidingToggleButton(
+            value: binding,
+            startIconName: "sun.max.fill",
+            endIconName: "moon.fill"
+        )
+
+        let iterations = 1000
+        let startTime = CFAbsoluteTimeGetCurrent()
+        for _ in 0..<iterations {
+            value.toggle()
             _ = button.body
         }
         let endTime = CFAbsoluteTimeGetCurrent()
         let elapsed = (endTime - startTime) * 1000
+        let avgPerToggle = elapsed / Double(iterations)
 
-        print("Body Generation (100x): \(String(format: "%.2f", elapsed))ms")
-        #expect(elapsed < 1000, "Body generation should complete in under 1 second")
-    }
-
-    @Test("Benchmark: Memory - Multiple Instance Creation")
-    func benchmarkMultipleInstances() {
-        var value = false
-        let binding = Binding(get: { value }, set: { value = $0 })
-
-        var buttons: [SlidingToggleButton] = []
-        buttons.reserveCapacity(1000)
-
-        let startTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<1000 {
-            let button = SlidingToggleButton(
-                value: binding,
-                startIconName: "sun.max.fill",
-                endIconName: "moon.fill"
-            )
-            buttons.append(button)
-        }
-        let endTime = CFAbsoluteTimeGetCurrent()
-        let elapsed = (endTime - startTime) * 1000
-
-        print("Multiple Instance Creation (1000x): \(String(format: "%.2f", elapsed))ms")
-        print("Array count: \(buttons.count)")
-        #expect(buttons.count == 1000)
-        #expect(elapsed < 1000, "Multiple instance creation should complete in under 1 second")
-    }
-
-    @Test("Benchmark: Defaults Access")
-    func benchmarkDefaultsAccess() {
-        let startTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<100000 {
-            _ = SlidingToggleButtonDefaults.defaultSize
-            _ = SlidingToggleButtonDefaults.padding
-            _ = SlidingToggleButtonDefaults.backgroundColor
-            _ = SlidingToggleButtonDefaults.buttonBackgroundColor
-            _ = SlidingToggleButtonDefaults.vertical
-        }
-        let endTime = CFAbsoluteTimeGetCurrent()
-        let elapsed = (endTime - startTime) * 1000
-
-        print("Defaults Access (100000x): \(String(format: "%.2f", elapsed))ms")
-        #expect(elapsed < 500, "Defaults access should complete in under 500ms")
+        print("Rapid Toggle (\(iterations)x): \(String(format: "%.2f", elapsed))ms total")
+        print("Average per Toggle: \(String(format: "%.3f", avgPerToggle))ms")
+        #expect(avgPerToggle < 1, "Each toggle cycle should be under 1ms")
     }
 }
