@@ -27,20 +27,30 @@ struct ContentView: View {
     var body: some View {
         HStack {
             // Horizontal Sliding Toggle Button
-            SlidingToggleButton(
-                value: $isDarkMode,
-                startIconName: "sun.max.fill",
-                endIconName: "moon.fill"
-            )
+            SlidingToggleButton(value: $isDarkMode) {
+                Image(systemName: "sun.max.fill")
+                Image(systemName: "moon.fill")
+            }
             // Vertical Sliding Toggle Button
-            SlidingToggleButton(
-                value: $isDarkMode,
-                vertical: true,
-                startIconName: "sun.max.fill",
-                endIconName: "moon.fill"
-            )
+            SlidingToggleButton(value: $isDarkMode, vertical: true) {
+                Image(systemName: "sun.max.fill")
+                Image(systemName: "moon.fill")
+            }
         }
     }
+}
+```
+
+The icons are provided in a trailing closure:
+- First view: start icon (true state)
+- Second view: end icon (false state)
+
+`Image` views are automatically resizable. You can also use custom views:
+
+```swift
+SlidingToggleButton(value: $isOn) {
+    Circle().fill(.yellow)
+    Circle().fill(.blue)
 }
 ```
 

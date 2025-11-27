@@ -1,18 +1,21 @@
 import SwiftUI
 
-// MARK: - Defaults
+// MARK: - View Extension for Resizable Images
 
-public class SlidingToggleButtonDefaults {
-    public static let defaultSize: CGFloat = 24
-    public static let padding: CGFloat = 8
-    public static let backgroundColor: Color = .secondary.opacity(0.3)
-    public static let buttonBackgroundColor: Color = .primary.opacity(0.4)
-    public static let vertical: Bool = false
+private extension View {
+    @ViewBuilder
+    func resizableIfImage() -> some View {
+        if let image = self as? Image {
+            image.resizable()
+        } else {
+            self
+        }
+    }
 }
 
 // MARK: - SlidingToggleButton
 
-public struct SlidingToggleButton: View {
+public struct SlidingToggleButton<StartIcon: View, EndIcon: View>: View {
     @Binding private var value: Bool
     @State private var buttonAlignment: Alignment
     @State private var animateStartIcon: Bool = false
@@ -23,9 +26,34 @@ public struct SlidingToggleButton: View {
     public let backgroundColor: Color
     public let buttonBackgroundColor: Color
     public let vertical: Bool
-    public let startIconName: String
-    public let endIconName: String
+    private let startIcon: StartIcon
+    private let endIcon: EndIcon
 
+    /// Creates a sliding toggle button with two icon views.
+    ///
+    /// The icons are provided in a trailing closure and assigned based on order:
+    /// - First view: start icon (true state)
+    /// - Second view: end icon (false state)
+    ///
+    /// `Image` views are automatically made resizable and scaled to fit.
+    /// Custom views are used as-is.
+    ///
+    /// Example usage:
+    /// ```swift
+    /// SlidingToggleButton(value: $isDarkMode) {
+    ///     Image(systemName: "sun.max.fill")
+    ///     Image(systemName: "moon.fill")
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - value: A binding to the toggle's state.
+    ///   - size: The size of the icon area. Defaults to 24.
+    ///   - padding: The padding around each icon. Defaults to 8.
+    ///   - backgroundColor: The background color of the capsule.
+    ///   - buttonBackgroundColor: The background color of the sliding button.
+    ///   - vertical: Whether the toggle is vertical. Defaults to false.
+    ///   - icons: A view builder containing exactly two views (start and end icons).
     public init(
         value: Binding<Bool>,
         size: CGFloat? = nil,
@@ -33,8 +61,7 @@ public struct SlidingToggleButton: View {
         backgroundColor: Color? = nil,
         buttonBackgroundColor: Color? = nil,
         vertical: Bool? = nil,
-        startIconName: String,
-        endIconName: String
+        @ViewBuilder icons: () -> TupleView<(StartIcon, EndIcon)>
     ) {
         let effectiveSize = size ?? SlidingToggleButtonDefaults.defaultSize
         let effectiveVertical = vertical ?? SlidingToggleButtonDefaults.vertical
@@ -53,8 +80,10 @@ public struct SlidingToggleButton: View {
         self.backgroundColor = backgroundColor ?? SlidingToggleButtonDefaults.backgroundColor
         self.buttonBackgroundColor = buttonBackgroundColor ?? SlidingToggleButtonDefaults.buttonBackgroundColor
         self.vertical = effectiveVertical
-        self.startIconName = startIconName
-        self.endIconName = endIconName
+
+        let iconViews = icons().value
+        self.startIcon = iconViews.0
+        self.endIcon = iconViews.1
     }
 
     public var body: some View {
@@ -92,14 +121,15 @@ public struct SlidingToggleButton: View {
     // MARK: - Private Views
 
     private var startIconView: some View {
-        Image(systemName: startIconName)
-            .resizable()
+        startIcon
+            .resizableIfImage()
+            .scaledToFit()
             .frame(width: size, height: size)
             .padding(padding)
             .foregroundStyle(.white)
             .containerShape(.rect)
-            .phaseAnimator([false, true], trigger: animateStartIcon) { sparkleSymbol, _ in
-                sparkleSymbol
+            .phaseAnimator([false, true], trigger: animateStartIcon) { content, _ in
+                content
                     .symbolEffect(.bounce.byLayer, value: animateStartIcon)
             }
             .onTapGesture {
@@ -108,14 +138,15 @@ public struct SlidingToggleButton: View {
     }
 
     private var endIconView: some View {
-        Image(systemName: endIconName)
-            .resizable()
+        endIcon
+            .resizableIfImage()
+            .scaledToFit()
             .frame(width: size, height: size)
             .padding(padding)
             .foregroundStyle(.white)
             .containerShape(.rect)
-            .phaseAnimator([false, true], trigger: animateEndIcon) { sparkleSymbol, _ in
-                sparkleSymbol
+            .phaseAnimator([false, true], trigger: animateEndIcon) { content, _ in
+                content
                     .symbolEffect(.bounce.byLayer, value: animateEndIcon)
             }
             .onTapGesture {
@@ -164,17 +195,14 @@ public struct SlidingToggleButton: View {
 
         var body: some View {
             HStack {
-                SlidingToggleButton(
-                    value: $isDarkMode,
-                    startIconName: "sun.max.fill",
-                    endIconName: "moon.fill"
-                )
-                SlidingToggleButton(
-                    value: $isDarkMode,
-                    vertical: true,
-                    startIconName: "sun.max.fill",
-                    endIconName: "moon.fill"
-                )
+                SlidingToggleButton(value: $isDarkMode) {
+                    Image(systemName: "sun.max.fill")
+                    Image(systemName: "moon.fill")
+                }
+                SlidingToggleButton(value: $isDarkMode, vertical: true) {
+                    Image(systemName: "sun.max.fill")
+                    Image(systemName: "moon.fill")
+                }
             }
             .padding()
             .onAppear {

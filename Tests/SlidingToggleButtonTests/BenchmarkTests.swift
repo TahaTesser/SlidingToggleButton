@@ -11,11 +11,10 @@ struct SlidingToggleButtonBenchmarkTests {
         let binding = Binding(get: { value }, set: { value = $0 })
 
         let startTime = CFAbsoluteTimeGetCurrent()
-        let button = SlidingToggleButton(
-            value: binding,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+        let button = SlidingToggleButton(value: binding) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         _ = button.body
         let endTime = CFAbsoluteTimeGetCurrent()
         let elapsed = (endTime - startTime) * 1000
@@ -29,11 +28,10 @@ struct SlidingToggleButtonBenchmarkTests {
         var value = false
         let binding = Binding(get: { value }, set: { value = $0 })
 
-        let button = SlidingToggleButton(
-            value: binding,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+        let button = SlidingToggleButton(value: binding) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
 
         let bodyDescription = String(describing: button.body)
         let depth = bodyDescription.components(separatedBy: "(").count - 1
@@ -44,9 +42,9 @@ struct SlidingToggleButtonBenchmarkTests {
 
     @Test("Benchmark: Memory Footprint")
     func benchmarkMemoryFootprint() {
-        let instanceSize = MemoryLayout<SlidingToggleButton>.size
-        let instanceStride = MemoryLayout<SlidingToggleButton>.stride
-        let instanceAlignment = MemoryLayout<SlidingToggleButton>.alignment
+        let instanceSize = MemoryLayout<SlidingToggleButton<Image, Image>>.size
+        let instanceStride = MemoryLayout<SlidingToggleButton<Image, Image>>.stride
+        let instanceAlignment = MemoryLayout<SlidingToggleButton<Image, Image>>.alignment
 
         print("Instance Size: \(instanceSize) bytes")
         print("Instance Stride: \(instanceStride) bytes")
@@ -60,11 +58,10 @@ struct SlidingToggleButtonBenchmarkTests {
         var value = false
         let binding = Binding(get: { value }, set: { value = $0 })
 
-        let button = SlidingToggleButton(
-            value: binding,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+        let button = SlidingToggleButton(value: binding) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         _ = button.body
 
         let startTime = CFAbsoluteTimeGetCurrent()
@@ -82,11 +79,10 @@ struct SlidingToggleButtonBenchmarkTests {
         var value = false
         let binding = Binding(get: { value }, set: { value = $0 })
 
-        let button = SlidingToggleButton(
-            value: binding,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+        let button = SlidingToggleButton(value: binding) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
 
         let iterations = 1000
         let startTime = CFAbsoluteTimeGetCurrent()

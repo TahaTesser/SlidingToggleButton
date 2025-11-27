@@ -20,15 +20,14 @@ struct SlidingToggleButtonTests {
     func testMinimalInitialization() {
         var value = false
         let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            value: .init(get: { value }, set: { value = $0 })
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(button.size == SlidingToggleButtonDefaults.defaultSize)
         #expect(button.padding == SlidingToggleButtonDefaults.padding)
         #expect(button.vertical == SlidingToggleButtonDefaults.vertical)
-        #expect(button.startIconName == "sun.max.fill")
-        #expect(button.endIconName == "moon.fill")
     }
 
     @Test("Initialization with custom size")
@@ -36,10 +35,11 @@ struct SlidingToggleButtonTests {
         var value = false
         let button = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            size: 32,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            size: 32
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(button.size == 32)
     }
 
@@ -48,10 +48,11 @@ struct SlidingToggleButtonTests {
         var value = false
         let button = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            padding: 12,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            padding: 12
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(button.padding == 12)
     }
 
@@ -60,10 +61,11 @@ struct SlidingToggleButtonTests {
         var value = false
         let button = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            vertical: true,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            vertical: true
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(button.vertical == true)
     }
 
@@ -72,10 +74,11 @@ struct SlidingToggleButtonTests {
         var value = false
         let button = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            backgroundColor: .red,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            backgroundColor: .red
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(button.backgroundColor == .red)
     }
 
@@ -84,10 +87,11 @@ struct SlidingToggleButtonTests {
         var value = false
         let button = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            buttonBackgroundColor: .blue,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            buttonBackgroundColor: .blue
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(button.buttonBackgroundColor == .blue)
     }
 
@@ -100,17 +104,16 @@ struct SlidingToggleButtonTests {
             padding: 16,
             backgroundColor: .green,
             buttonBackgroundColor: .orange,
-            vertical: true,
-            startIconName: "star.fill",
-            endIconName: "heart.fill"
-        )
+            vertical: true
+        ) {
+            Image(systemName: "star.fill")
+            Image(systemName: "heart.fill")
+        }
         #expect(button.size == 48)
         #expect(button.padding == 16)
         #expect(button.backgroundColor == .green)
         #expect(button.buttonBackgroundColor == .orange)
         #expect(button.vertical == true)
-        #expect(button.startIconName == "star.fill")
-        #expect(button.endIconName == "heart.fill")
     }
 
     // MARK: - Initial State Tests
@@ -119,10 +122,11 @@ struct SlidingToggleButtonTests {
     func testHorizontalInitialAlignmentTrue() {
         var value = true
         _ = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            value: .init(get: { value }, set: { value = $0 })
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(value == true)
     }
 
@@ -130,10 +134,11 @@ struct SlidingToggleButtonTests {
     func testHorizontalInitialAlignmentFalse() {
         var value = false
         _ = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            value: .init(get: { value }, set: { value = $0 })
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(value == false)
     }
 
@@ -142,10 +147,11 @@ struct SlidingToggleButtonTests {
         var value = true
         _ = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            vertical: true,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            vertical: true
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(value == true)
     }
 
@@ -154,10 +160,11 @@ struct SlidingToggleButtonTests {
         var value = false
         _ = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            vertical: true,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            vertical: true
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(value == false)
     }
 
@@ -167,10 +174,11 @@ struct SlidingToggleButtonTests {
     func testHorizontalBodyGeneration() {
         var value = false
         let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            value: .init(get: { value }, set: { value = $0 })
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         _ = button.body
         #expect(button.vertical == false)
     }
@@ -180,10 +188,11 @@ struct SlidingToggleButtonTests {
         var value = false
         let button = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            vertical: true,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            vertical: true
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         _ = button.body
         #expect(button.vertical == true)
     }
@@ -195,10 +204,11 @@ struct SlidingToggleButtonTests {
         var value = false
         let button = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            size: 0,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            size: 0
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(button.size == 0)
     }
 
@@ -207,10 +217,11 @@ struct SlidingToggleButtonTests {
         var value = false
         let button = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            padding: 0,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            padding: 0
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(button.padding == 0)
     }
 
@@ -219,22 +230,53 @@ struct SlidingToggleButtonTests {
         var value = false
         let button = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            size: 1000,
-            startIconName: "sun.max.fill",
-            endIconName: "moon.fill"
-        )
+            size: 1000
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
         #expect(button.size == 1000)
     }
 
-    @Test("Different icon names are stored correctly")
-    func testDifferentIconNames() {
+    @Test("Different SF Symbol icons work correctly")
+    func testDifferentSFSymbolIcons() {
         var value = false
         let button = SlidingToggleButton(
+            value: .init(get: { value }, set: { value = $0 })
+        ) {
+            Image(systemName: "play.fill")
+            Image(systemName: "pause.fill")
+        }
+        _ = button.body
+        #expect(value == false)
+    }
+
+    @Test("Initialization with custom view icons")
+    func testCustomViewIconInitialization() {
+        var value = false
+        let button = SlidingToggleButton(
+            value: .init(get: { value }, set: { value = $0 })
+        ) {
+            Circle().fill(.yellow)
+            Rectangle().fill(.blue)
+        }
+        #expect(button.size == SlidingToggleButtonDefaults.defaultSize)
+        #expect(button.padding == SlidingToggleButtonDefaults.padding)
+        #expect(button.vertical == SlidingToggleButtonDefaults.vertical)
+    }
+
+    @Test("Initialization with mixed icon types")
+    func testMixedIconTypes() {
+        var value = true
+        let button = SlidingToggleButton(
             value: .init(get: { value }, set: { value = $0 }),
-            startIconName: "play.fill",
-            endIconName: "pause.fill"
-        )
-        #expect(button.startIconName == "play.fill")
-        #expect(button.endIconName == "pause.fill")
+            size: 32,
+            vertical: true
+        ) {
+            Image(systemName: "sun.max.fill")
+            Circle().fill(.gray)
+        }
+        #expect(button.size == 32)
+        #expect(button.vertical == true)
     }
 }
