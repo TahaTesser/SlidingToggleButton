@@ -171,7 +171,7 @@ struct SlidingToggleButtonTests {
             startIconName: "sun.max.fill",
             endIconName: "moon.fill"
         )
-        let _ = button.body
+        _ = button.body
         #expect(button.vertical == false)
     }
 
@@ -184,7 +184,7 @@ struct SlidingToggleButtonTests {
             startIconName: "sun.max.fill",
             endIconName: "moon.fill"
         )
-        let _ = button.body
+        _ = button.body
         #expect(button.vertical == true)
     }
 
