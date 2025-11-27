@@ -10,16 +10,28 @@ let package = Package(
         .macOS(.v14),
     ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "SlidingToggleButton",
             targets: ["SlidingToggleButton"]
         ),
     ],
-    targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "SlidingToggleButton"),
+    dependencies: [
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.17.0"),
+        .package(url: "https://github.com/realm/SwiftLint", from: "0.57.0"),
     ],
-    swiftLanguageModes: [.v5])
+    targets: [
+        .target(
+            name: "SlidingToggleButton",
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLint")]
+        ),
+        .testTarget(
+            name: "SlidingToggleButtonTests",
+            dependencies: [
+                "SlidingToggleButton",
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            ],
+            exclude: ["__Snapshots__"]
+        ),
+    ],
+    swiftLanguageModes: [.v5]
+)
