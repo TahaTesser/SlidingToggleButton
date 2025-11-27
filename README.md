@@ -10,15 +10,31 @@ https://github.com/user-attachments/assets/5ce70903-8e6a-40a8-a2c2-40c88b513571
 
 ## Measurements (Horizontal)
 
-![SlidingToggleButton_Horizontal_Measurements.png](.//Docs/SlidingToggleButton_Horizontal_Measurements.png)
+| Attribute | Value |
+|-----------|-------|
+| Container Width | 48 pixels |
+| Container Height | 24 pixels |
+| Button Shape Size | 24 × 24 pixels |
+| Icon Size | 18 × 18 pixels |
+| Icon Padding | 8 pixels (All Sides) |
 
 ## Measurements (Vertical)
 
-![SlidingToggleButton_Vertical_Measurements.png](.//Docs/SlidingToggleButton_Vertical_Measurements.png)
+| Attribute | Value |
+|-----------|-------|
+| Container Width | 24 pixels |
+| Container Height | 48 pixels |
+| Button Shape Size | 24 × 24 pixels |
+| Icon Size | 18 × 18 pixels |
+| Icon Padding | 8 pixels (All Sides) |
 
 ## Colors
 
-![SlidingToggleButton_Colors.png](.//Docs/SlidingToggleButton_Colors.png)
+| Attribute | Value |
+|-----------|-------|
+| Container Background Color | .secondary.opacity(0.3) |
+| Button Background Color | .primary.opacity(0.4) |
+| Icon Color | .secondary |
 
 ## Installation
 
