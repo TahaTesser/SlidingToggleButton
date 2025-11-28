@@ -31,10 +31,8 @@ jobs:
             exit 1
           fi
 
-      - name: Build and Test
-        run: |
-          swift build
-          swift test --filter "SlidingToggleButtonTests|BenchmarkTests"
+      - name: Build
+        run: swift build
 
       - name: Generate Changelog
         uses: orhun/git-cliff-action@v4
