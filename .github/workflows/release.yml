@@ -41,7 +41,7 @@ jobs:
         id: git-cliff
         with:
           config: cliff.toml
-          args: --tag ${{ inputs.version }}
+          args: --tag v${{ inputs.version }}
         env:
           OUTPUT: CHANGELOG.md
           GITHUB_REPO: ${{ github.repository }}
@@ -51,7 +51,7 @@ jobs:
         id: release-notes
         with:
           config: cliff.toml
-          args: --tag ${{ inputs.version }} --unreleased --strip header
+          args: --tag v${{ inputs.version }} --unreleased --strip header
         env:
           GITHUB_REPO: ${{ github.repository }}
 
@@ -60,19 +60,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add CHANGELOG.md
-          git diff --staged --quiet || git commit -m "chore(release): update CHANGELOG.md for ${{ inputs.version }}"
+          git diff --staged --quiet || git commit -m "chore(release): update CHANGELOG.md for v${{ inputs.version }}"
           git push
 
       - name: Create Tag
         run: |
-          git tag -a "${{ inputs.version }}" -m "Release ${{ inputs.version }}"
-          git push origin "${{ inputs.version }}"
+          git tag -a "v${{ inputs.version }}" -m "Release v${{ inputs.version }}"
+          git push origin "v${{ inputs.version }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.version }}
-          name: Release ${{ inputs.version }}
+          tag_name: v${{ inputs.version }}
+          name: v${{ inputs.version }}
           prerelease: ${{ inputs.prerelease }}
           body: |
             ${{ steps.release-notes.outputs.content }}
