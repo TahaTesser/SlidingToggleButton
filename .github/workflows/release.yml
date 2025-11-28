@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Validate version format
         run: |
@@ -34,10 +36,35 @@ jobs:
           swift build
           swift test
 
-      - name: Create Tag
+      - name: Generate Changelog
+        uses: orhun/git-cliff-action@v4
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --tag ${{ inputs.version }}
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_REPO: ${{ github.repository }}
+
+      - name: Generate Release Notes
+        uses: orhun/git-cliff-action@v4
+        id: release-notes
+        with:
+          config: cliff.toml
+          args: --tag ${{ inputs.version }} --unreleased --strip header
+        env:
+          GITHUB_REPO: ${{ github.repository }}
+
+      - name: Commit Changelog
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git diff --staged --quiet || git commit -m "chore(release): update CHANGELOG.md for ${{ inputs.version }}"
+          git push
+
+      - name: Create Tag
+        run: |
           git tag -a "${{ inputs.version }}" -m "Release ${{ inputs.version }}"
           git push origin "${{ inputs.version }}"
 
@@ -47,8 +74,9 @@ jobs:
           tag_name: ${{ inputs.version }}
           name: Release ${{ inputs.version }}
           prerelease: ${{ inputs.prerelease }}
-          generate_release_notes: true
           body: |
+            ${{ steps.release-notes.outputs.content }}
+
             ## Swift Package Manager
 
             Add this package to your project using Swift Package Manager:
