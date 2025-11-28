@@ -72,20 +72,4 @@ jobs:
           tag_name: v${{ inputs.version }}
           name: v${{ inputs.version }}
           prerelease: ${{ inputs.prerelease }}
-          body: |
-            ${{ steps.release-notes.outputs.content }}
-
-            ## Swift Package Manager
-
-            Add this package to your project using Swift Package Manager:
-
-            ```swift
-            dependencies: [
-                .package(url: "https://github.com/TahaTesser/SlidingToggleButton.git", from: "${{ inputs.version }}")
-            ]
-            ```
-
-            Or in Xcode: **File > Add Package Dependencies** and enter:
-            ```
-            https://github.com/TahaTesser/SlidingToggleButton.git
-            ```
+          body: ${{ steps.release-notes.outputs.content }}
