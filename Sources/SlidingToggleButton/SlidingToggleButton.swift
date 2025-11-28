@@ -1,174 +1,172 @@
 import SwiftUI
 
-// MARK: - View Extension for Resizable Images
-
-private extension View {
-    @ViewBuilder
-    func resizableIfImage() -> some View {
-        if let image = self as? Image {
-            image.resizable()
-        } else {
-            self
-        }
-    }
-}
-
 // MARK: - SlidingToggleButton
 
-public struct SlidingToggleButton<StartIcon: View, EndIcon: View>: View {
-    @Binding private var value: Bool
+public struct SlidingToggleButton: View {
+    @Binding private var selection: Int
     @State private var buttonAlignment: Alignment
-    @State private var animateStartIcon: Bool = false
-    @State private var animateEndIcon: Bool = false
+    @State private var animationTriggers: [Bool]
 
     public let size: CGFloat
     public let padding: CGFloat
     public let backgroundColor: Color
     public let buttonBackgroundColor: Color
     public let vertical: Bool
-    private let startIcon: StartIcon
-    private let endIcon: EndIcon
 
-    /// Creates a sliding toggle button with two icon views.
-    ///
-    /// The icons are provided in a trailing closure and assigned based on order:
-    /// - First view: start icon (true state)
-    /// - Second view: end icon (false state)
-    ///
-    /// `Image` views are automatically made resizable and scaled to fit.
-    /// Custom views are used as-is.
-    ///
-    /// Example usage:
-    /// ```swift
-    /// SlidingToggleButton(value: $isDarkMode) {
-    ///     Image(systemName: "sun.max.fill")
-    ///     Image(systemName: "moon.fill")
-    /// }
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - value: A binding to the toggle's state.
-    ///   - size: The size of the icon area. Defaults to 24.
-    ///   - padding: The padding around each icon. Defaults to 8.
-    ///   - backgroundColor: The background color of the capsule.
-    ///   - buttonBackgroundColor: The background color of the sliding button.
-    ///   - vertical: Whether the toggle is vertical. Defaults to false.
-    ///   - icons: A view builder containing exactly two views (start and end icons).
-    public init(
-        value: Binding<Bool>,
+    private let icons: [AnyView]
+    private let iconCount: Int
+
+    // MARK: - 2-Icon Initializer
+
+    /// Creates a sliding toggle button with two icons.
+    public init<Icon0: View, Icon1: View>(
+        selection: Binding<Int>,
         size: CGFloat? = nil,
         padding: CGFloat? = nil,
         backgroundColor: Color? = nil,
         buttonBackgroundColor: Color? = nil,
         vertical: Bool? = nil,
-        @ViewBuilder icons: () -> TupleView<(StartIcon, EndIcon)>
+        @ViewBuilder icons: () -> TupleView<(Icon0, Icon1)>
     ) {
-        let effectiveSize = size ?? SlidingToggleButtonDefaults.defaultSize
+        let iconViews = icons().value
+        self.init(
+            selection: selection,
+            size: size,
+            padding: padding,
+            backgroundColor: backgroundColor,
+            buttonBackgroundColor: buttonBackgroundColor,
+            vertical: vertical,
+            iconArray: [AnyView(iconViews.0), AnyView(iconViews.1)]
+        )
+    }
+
+    // MARK: - 3-Icon Initializer
+
+    /// Creates a sliding toggle button with three icons.
+    public init<Icon0: View, Icon1: View, Icon2: View>(
+        selection: Binding<Int>,
+        size: CGFloat? = nil,
+        padding: CGFloat? = nil,
+        backgroundColor: Color? = nil,
+        buttonBackgroundColor: Color? = nil,
+        vertical: Bool? = nil,
+        // swiftlint:disable:next large_tuple
+        @ViewBuilder icons: () -> TupleView<(Icon0, Icon1, Icon2)>
+    ) {
+        let iconViews = icons().value
+        self.init(
+            selection: selection,
+            size: size,
+            padding: padding,
+            backgroundColor: backgroundColor,
+            buttonBackgroundColor: buttonBackgroundColor,
+            vertical: vertical,
+            iconArray: [AnyView(iconViews.0), AnyView(iconViews.1), AnyView(iconViews.2)]
+        )
+    }
+
+    // MARK: - Private Initializer
+
+    private init(
+        selection: Binding<Int>,
+        size: CGFloat?,
+        padding: CGFloat?,
+        backgroundColor: Color?,
+        buttonBackgroundColor: Color?,
+        vertical: Bool?,
+        iconArray: [AnyView]
+    ) {
         let effectiveVertical = vertical ?? SlidingToggleButtonDefaults.vertical
-        let effectivePadding = padding ?? SlidingToggleButtonDefaults.padding
+        let iconCount = iconArray.count
 
-        _value = value
+        _selection = selection
+        _buttonAlignment = State(initialValue: Self.computeAlignment(
+            for: selection.wrappedValue,
+            iconCount: iconCount,
+            vertical: effectiveVertical
+        ))
+        _animationTriggers = State(initialValue: Array(repeating: false, count: iconCount))
 
-        if effectiveVertical {
-            _buttonAlignment = State(initialValue: value.wrappedValue ? .top : .bottom)
-        } else {
-            _buttonAlignment = State(initialValue: value.wrappedValue ? .leading : .trailing)
-        }
-
-        self.size = effectiveSize
-        self.padding = effectivePadding
+        self.size = size ?? SlidingToggleButtonDefaults.defaultSize
+        self.padding = padding ?? SlidingToggleButtonDefaults.padding
         self.backgroundColor = backgroundColor ?? SlidingToggleButtonDefaults.backgroundColor
         self.buttonBackgroundColor = buttonBackgroundColor ?? SlidingToggleButtonDefaults.buttonBackgroundColor
         self.vertical = effectiveVertical
-
-        let iconViews = icons().value
-        self.startIcon = iconViews.0
-        self.endIcon = iconViews.1
+        self.icons = iconArray
+        self.iconCount = iconCount
     }
+
+    // MARK: - Body
 
     public var body: some View {
         ZStack(alignment: buttonAlignment) {
             Circle()
                 .fill(buttonBackgroundColor)
-                .frame(
-                    width: size + (padding * 2),
-                    height: size + (padding * 2)
-                )
-                .onChange(of: value) {
-                    withAnimation(.spring(response: 0.3)) {
-                        switch value {
-                        case true:
-                            buttonAlignment = vertical ? .top : .leading
-                            animateStartIcon.toggle()
-                        case false:
-                            buttonAlignment = vertical ? .bottom : .trailing
-                            animateEndIcon.toggle()
-                        }
-                    }
-                }
+                .frame(width: size + (padding * 2), height: size + (padding * 2))
 
             flexibleStack(vertical: vertical, spacing: 0) {
-                startIconView
-                endIconView
+                ForEach(0..<iconCount, id: \.self) { index in
+                    iconView(at: index)
+                }
             }
         }
-        .background(
-            Capsule()
-                .fill(backgroundColor)
-        )
+        .background(Capsule().fill(backgroundColor))
+        .onChange(of: selection) { _, newValue in
+            withAnimation(.spring(response: 0.3)) {
+                buttonAlignment = Self.computeAlignment(
+                    for: newValue,
+                    iconCount: iconCount,
+                    vertical: vertical
+                )
+                if newValue < animationTriggers.count {
+                    animationTriggers[newValue].toggle()
+                }
+            }
+        }
     }
 
     // MARK: - Private Views
 
-    private var startIconView: some View {
-        startIcon
+    private func iconView(at index: Int) -> some View {
+        icons[index]
             .resizableIfImage()
             .scaledToFit()
             .frame(width: size, height: size)
             .padding(padding)
             .foregroundStyle(.white)
             .containerShape(.rect)
-            .phaseAnimator([false, true], trigger: animateStartIcon) { content, _ in
-                content
-                    .symbolEffect(.bounce.byLayer, value: animateStartIcon)
+            .phaseAnimator([false, true], trigger: animationTriggers[index]) { content, _ in
+                content.symbolEffect(.bounce.byLayer, value: animationTriggers[index])
             }
             .onTapGesture {
-                handleStartIconTap()
-            }
-    }
-
-    private var endIconView: some View {
-        endIcon
-            .resizableIfImage()
-            .scaledToFit()
-            .frame(width: size, height: size)
-            .padding(padding)
-            .foregroundStyle(.white)
-            .containerShape(.rect)
-            .phaseAnimator([false, true], trigger: animateEndIcon) { content, _ in
-                content
-                    .symbolEffect(.bounce.byLayer, value: animateEndIcon)
-            }
-            .onTapGesture {
-                handleEndIconTap()
+                handleTap(at: index)
             }
     }
 
     // MARK: - Private Methods
 
-    private func handleStartIconTap() {
-        withAnimation(.spring(response: 0.3)) {
-            buttonAlignment = vertical ? .top : .leading
-            animateStartIcon.toggle()
-            value = true
+    private static func computeAlignment(for index: Int, iconCount: Int, vertical: Bool) -> Alignment {
+        switch iconCount {
+        case 2:
+            return index == 0
+                ? (vertical ? .top : .leading)
+                : (vertical ? .bottom : .trailing)
+        case 3:
+            switch index {
+            case 0: return vertical ? .top : .leading
+            case 1: return .center
+            default: return vertical ? .bottom : .trailing
+            }
+        default:
+            return .center
         }
     }
 
-    private func handleEndIconTap() {
+    private func handleTap(at index: Int) {
         withAnimation(.spring(response: 0.3)) {
-            buttonAlignment = vertical ? .bottom : .trailing
-            animateEndIcon.toggle()
-            value = false
+            selection = index
+            buttonAlignment = Self.computeAlignment(for: index, iconCount: iconCount, vertical: vertical)
+            animationTriggers[index].toggle()
         }
     }
 
@@ -186,38 +184,60 @@ public struct SlidingToggleButton<StartIcon: View, EndIcon: View>: View {
     }
 }
 
+// MARK: - View Extension
+
+private extension View {
+    @ViewBuilder
+    func resizableIfImage() -> some View {
+        if let image = self as? Image {
+            image.resizable()
+        } else {
+            self
+        }
+    }
+}
+
 // MARK: - Preview
 
-#Preview(traits: .sizeThatFitsLayout) {
+#Preview {
     struct PreviewWrapper: View {
-        @State private var isDarkMode = true
-        @State private var timer: Timer?
+        @State private var twoIcon = 0
+        @State private var threeIcon = 0
 
         var body: some View {
-            HStack {
-                SlidingToggleButton(value: $isDarkMode) {
-                    Image(systemName: "sun.max.fill")
-                    Image(systemName: "moon.fill")
+            VStack(spacing: 30) {
+                VStack(spacing: 8) {
+                    Text("2-Icon: \(twoIcon)")
+                    HStack(spacing: 20) {
+                        SlidingToggleButton(selection: $twoIcon) {
+                            Image(systemName: "sun.max.fill")
+                            Image(systemName: "moon.fill")
+                        }
+                        SlidingToggleButton(selection: $twoIcon, vertical: true) {
+                            Image(systemName: "sun.max.fill")
+                            Image(systemName: "moon.fill")
+                        }
+                    }
                 }
-                SlidingToggleButton(value: $isDarkMode, vertical: true) {
-                    Image(systemName: "sun.max.fill")
-                    Image(systemName: "moon.fill")
-                }
-            }
-            .padding()
-            .onAppear {
-                timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                    Task { @MainActor in
-                        isDarkMode.toggle()
+
+                VStack(spacing: 8) {
+                    Text("3-Icon: \(threeIcon)")
+                    HStack(spacing: 20) {
+                        SlidingToggleButton(selection: $threeIcon) {
+                            Image(systemName: "sun.max.fill")
+                            Image(systemName: "circle.lefthalf.filled")
+                            Image(systemName: "moon.fill")
+                        }
+                        SlidingToggleButton(selection: $threeIcon, vertical: true) {
+                            Image(systemName: "sun.max.fill")
+                            Image(systemName: "circle.lefthalf.filled")
+                            Image(systemName: "moon.fill")
+                        }
                     }
                 }
             }
-            .onDisappear {
-                timer?.invalidate()
-                timer = nil
-            }
+            .padding()
         }
     }
-
     return PreviewWrapper()
 }

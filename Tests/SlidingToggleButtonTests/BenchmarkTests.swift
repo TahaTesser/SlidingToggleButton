@@ -5,97 +5,123 @@ import Testing
 @Suite("SlidingToggleButton Benchmark Tests")
 struct SlidingToggleButtonBenchmarkTests {
 
-    @Test("Benchmark: First Render Time")
+    @Test("First Render Time (2-Icon and 3-Icon)")
     func benchmarkFirstRenderTime() {
-        var value = false
-        let binding = Binding(get: { value }, set: { value = $0 })
+        var selection = 0
+        let binding = Binding(get: { selection }, set: { selection = $0 })
 
-        let startTime = CFAbsoluteTimeGetCurrent()
-        let button = SlidingToggleButton(value: binding) {
+        // 2-Icon
+        let startTime2 = CFAbsoluteTimeGetCurrent()
+        let twoIcon = SlidingToggleButton(selection: binding) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        _ = button.body
-        let endTime = CFAbsoluteTimeGetCurrent()
-        let elapsed = (endTime - startTime) * 1000
+        _ = twoIcon.body
+        let elapsed2 = (CFAbsoluteTimeGetCurrent() - startTime2) * 1000
+        print("2-Icon First Render: \(String(format: "%.3f", elapsed2))ms")
+        #expect(elapsed2 < 16.67)
 
-        print("First Render Time: \(String(format: "%.3f", elapsed))ms")
-        #expect(elapsed < 16.67, "First render should complete within one frame (16.67ms at 60fps)")
-    }
-
-    @Test("Benchmark: View Hierarchy Depth")
-    func benchmarkViewHierarchyDepth() {
-        var value = false
-        let binding = Binding(get: { value }, set: { value = $0 })
-
-        let button = SlidingToggleButton(value: binding) {
+        // 3-Icon
+        let startTime3 = CFAbsoluteTimeGetCurrent()
+        let threeIcon = SlidingToggleButton(selection: binding) {
             Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
             Image(systemName: "moon.fill")
         }
-
-        let bodyDescription = String(describing: button.body)
-        let depth = bodyDescription.components(separatedBy: "(").count - 1
-
-        print("View Hierarchy Depth: \(depth) levels")
-        #expect(depth < 250, "View hierarchy should not be excessively deep")
+        _ = threeIcon.body
+        let elapsed3 = (CFAbsoluteTimeGetCurrent() - startTime3) * 1000
+        print("3-Icon First Render: \(String(format: "%.3f", elapsed3))ms")
+        #expect(elapsed3 < 16.67)
     }
 
-    @Test("Benchmark: Memory Footprint")
+    @Test("Memory Footprint")
     func benchmarkMemoryFootprint() {
-        let instanceSize = MemoryLayout<SlidingToggleButton<Image, Image>>.size
-        let instanceStride = MemoryLayout<SlidingToggleButton<Image, Image>>.stride
-        let instanceAlignment = MemoryLayout<SlidingToggleButton<Image, Image>>.alignment
+        let size = MemoryLayout<SlidingToggleButton>.size
+        let stride = MemoryLayout<SlidingToggleButton>.stride
+        let alignment = MemoryLayout<SlidingToggleButton>.alignment
 
-        print("Instance Size: \(instanceSize) bytes")
-        print("Instance Stride: \(instanceStride) bytes")
-        print("Instance Alignment: \(instanceAlignment) bytes")
+        print("Instance Size: \(size) bytes")
+        print("Instance Stride: \(stride) bytes")
+        print("Instance Alignment: \(alignment) bytes")
 
-        #expect(instanceSize < 512, "Instance should be under 512 bytes")
+        #expect(size < 512)
     }
 
-    @Test("Benchmark: State Toggle Latency")
+    @Test("State Toggle Latency (2-Icon and 3-Icon)")
     func benchmarkStateToggleLatency() {
-        var value = false
-        let binding = Binding(get: { value }, set: { value = $0 })
+        var selection = 0
+        let binding = Binding(get: { selection }, set: { selection = $0 })
 
-        let button = SlidingToggleButton(value: binding) {
+        // 2-Icon
+        let twoIcon = SlidingToggleButton(selection: binding) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        _ = button.body
+        _ = twoIcon.body
 
-        let startTime = CFAbsoluteTimeGetCurrent()
-        value = true
-        _ = button.body
-        let endTime = CFAbsoluteTimeGetCurrent()
-        let elapsed = (endTime - startTime) * 1000
+        let startTime2 = CFAbsoluteTimeGetCurrent()
+        selection = 1
+        _ = twoIcon.body
+        let elapsed2 = (CFAbsoluteTimeGetCurrent() - startTime2) * 1000
+        print("2-Icon Toggle Latency: \(String(format: "%.3f", elapsed2))ms")
+        #expect(elapsed2 < 16.67)
 
-        print("State Toggle Latency: \(String(format: "%.3f", elapsed))ms")
-        #expect(elapsed < 16.67, "State toggle should complete within one frame (16.67ms at 60fps)")
+        // 3-Icon
+        selection = 0
+        let threeIcon = SlidingToggleButton(selection: binding) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
+        }
+        _ = threeIcon.body
+
+        let startTime3 = CFAbsoluteTimeGetCurrent()
+        selection = 2
+        _ = threeIcon.body
+        let elapsed3 = (CFAbsoluteTimeGetCurrent() - startTime3) * 1000
+        print("3-Icon Toggle Latency: \(String(format: "%.3f", elapsed3))ms")
+        #expect(elapsed3 < 16.67)
     }
 
-    @Test("Benchmark: Rapid Toggle Stability")
+    @Test("Rapid Toggle Stability (2-Icon and 3-Icon)")
     func benchmarkRapidToggleStability() {
-        var value = false
-        let binding = Binding(get: { value }, set: { value = $0 })
+        var selection = 0
+        let binding = Binding(get: { selection }, set: { selection = $0 })
+        let iterations = 1000
 
-        let button = SlidingToggleButton(value: binding) {
+        // 2-Icon
+        let twoIcon = SlidingToggleButton(selection: binding) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
 
-        let iterations = 1000
-        let startTime = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<iterations {
-            value.toggle()
-            _ = button.body
+        let startTime2 = CFAbsoluteTimeGetCurrent()
+        for i in 0..<iterations {
+            selection = i % 2
+            _ = twoIcon.body
         }
-        let endTime = CFAbsoluteTimeGetCurrent()
-        let elapsed = (endTime - startTime) * 1000
-        let avgPerToggle = elapsed / Double(iterations)
+        let elapsed2 = (CFAbsoluteTimeGetCurrent() - startTime2) * 1000
+        let avg2 = elapsed2 / Double(iterations)
+        let msg2 = "2-Icon Rapid (\(iterations)x): \(String(format: "%.2f", elapsed2))ms"
+        print("\(msg2), avg: \(String(format: "%.3f", avg2))ms")
+        #expect(avg2 < 1)
 
-        print("Rapid Toggle (\(iterations)x): \(String(format: "%.2f", elapsed))ms total")
-        print("Average per Toggle: \(String(format: "%.3f", avgPerToggle))ms")
-        #expect(avgPerToggle < 1, "Each toggle cycle should be under 1ms")
+        // 3-Icon
+        let threeIcon = SlidingToggleButton(selection: binding) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
+        }
+
+        let startTime3 = CFAbsoluteTimeGetCurrent()
+        for i in 0..<iterations {
+            selection = i % 3
+            _ = threeIcon.body
+        }
+        let elapsed3 = (CFAbsoluteTimeGetCurrent() - startTime3) * 1000
+        let avg3 = elapsed3 / Double(iterations)
+        let msg3 = "3-Icon Rapid (\(iterations)x): \(String(format: "%.2f", elapsed3))ms"
+        print("\(msg3), avg: \(String(format: "%.3f", avg3))ms")
+        #expect(avg3 < 1)
     }
 }

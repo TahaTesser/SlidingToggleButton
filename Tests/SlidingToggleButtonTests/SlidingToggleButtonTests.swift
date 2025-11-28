@@ -16,90 +16,128 @@ struct SlidingToggleButtonTests {
 
     // MARK: - Initialization Tests
 
-    @Test("Initialization with minimum parameters")
+    @Test("2-Icon and 3-Icon: Initialization with minimum parameters")
     func testMinimalInitialization() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 })
+        var selection = 0
+
+        // 2-Icon
+        let twoIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 })
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        #expect(button.size == SlidingToggleButtonDefaults.defaultSize)
-        #expect(button.padding == SlidingToggleButtonDefaults.padding)
-        #expect(button.vertical == SlidingToggleButtonDefaults.vertical)
+        #expect(twoIcon.size == SlidingToggleButtonDefaults.defaultSize)
+        #expect(twoIcon.padding == SlidingToggleButtonDefaults.padding)
+        #expect(twoIcon.vertical == SlidingToggleButtonDefaults.vertical)
+
+        // 3-Icon
+        let threeIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 })
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
+        }
+        #expect(threeIcon.size == SlidingToggleButtonDefaults.defaultSize)
+        #expect(threeIcon.padding == SlidingToggleButtonDefaults.padding)
+        #expect(threeIcon.vertical == SlidingToggleButtonDefaults.vertical)
     }
 
-    @Test("Initialization with custom size")
+    @Test("2-Icon and 3-Icon: Initialization with custom size")
     func testCustomSizeInitialization() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
+        var selection = 0
+
+        let twoIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
             size: 32
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        #expect(button.size == 32)
+        #expect(twoIcon.size == 32)
+
+        let threeIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
+            size: 48
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
+        }
+        #expect(threeIcon.size == 48)
     }
 
-    @Test("Initialization with custom padding")
+    @Test("2-Icon and 3-Icon: Initialization with custom padding")
     func testCustomPaddingInitialization() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
+        var selection = 0
+
+        let twoIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
             padding: 12
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        #expect(button.padding == 12)
+        #expect(twoIcon.padding == 12)
+
+        let threeIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
+            padding: 16
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
+        }
+        #expect(threeIcon.padding == 16)
     }
 
-    @Test("Initialization with vertical orientation")
+    @Test("2-Icon and 3-Icon: Initialization with vertical orientation")
     func testVerticalInitialization() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
+        var selection = 0
+
+        let twoIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
             vertical: true
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        #expect(button.vertical == true)
-    }
+        #expect(twoIcon.vertical == true)
 
-    @Test("Initialization with custom background color")
-    func testCustomBackgroundColorInitialization() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
-            backgroundColor: .red
+        let threeIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
+            vertical: true
         ) {
             Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
             Image(systemName: "moon.fill")
         }
-        #expect(button.backgroundColor == .red)
+        #expect(threeIcon.vertical == true)
     }
 
-    @Test("Initialization with custom button background color")
-    func testCustomButtonBackgroundColorInitialization() {
-        var value = false
+    @Test("Initialization with custom colors")
+    func testCustomColorsInitialization() {
+        var selection = 0
+
         let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
+            selection: .init(get: { selection }, set: { selection = $0 }),
+            backgroundColor: .red,
             buttonBackgroundColor: .blue
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
+        #expect(button.backgroundColor == .red)
         #expect(button.buttonBackgroundColor == .blue)
     }
 
-    @Test("Initialization with all custom parameters")
+    @Test("2-Icon and 3-Icon: Initialization with all custom parameters")
     func testFullCustomInitialization() {
-        var value = true
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
+        var selection = 1
+
+        let twoIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
             size: 48,
             padding: 16,
             backgroundColor: .green,
@@ -109,174 +147,207 @@ struct SlidingToggleButtonTests {
             Image(systemName: "star.fill")
             Image(systemName: "heart.fill")
         }
-        #expect(button.size == 48)
-        #expect(button.padding == 16)
-        #expect(button.backgroundColor == .green)
-        #expect(button.buttonBackgroundColor == .orange)
-        #expect(button.vertical == true)
-    }
+        #expect(twoIcon.size == 48)
+        #expect(twoIcon.padding == 16)
+        #expect(twoIcon.backgroundColor == .green)
+        #expect(twoIcon.buttonBackgroundColor == .orange)
+        #expect(twoIcon.vertical == true)
 
-    // MARK: - Initial State Tests
-
-    @Test("Horizontal button initial alignment when value is true")
-    func testHorizontalInitialAlignmentTrue() {
-        var value = true
-        _ = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 })
-        ) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
-        }
-        #expect(value == true)
-    }
-
-    @Test("Horizontal button initial alignment when value is false")
-    func testHorizontalInitialAlignmentFalse() {
-        var value = false
-        _ = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 })
-        ) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
-        }
-        #expect(value == false)
-    }
-
-    @Test("Vertical button initial alignment when value is true")
-    func testVerticalInitialAlignmentTrue() {
-        var value = true
-        _ = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
+        let threeIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
+            size: 36,
+            padding: 12,
+            backgroundColor: .purple,
+            buttonBackgroundColor: .cyan,
             vertical: true
         ) {
             Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
             Image(systemName: "moon.fill")
         }
-        #expect(value == true)
+        #expect(threeIcon.size == 36)
+        #expect(threeIcon.padding == 12)
+        #expect(threeIcon.backgroundColor == .purple)
+        #expect(threeIcon.buttonBackgroundColor == .cyan)
+        #expect(threeIcon.vertical == true)
     }
 
-    @Test("Vertical button initial alignment when value is false")
-    func testVerticalInitialAlignmentFalse() {
-        var value = false
+    // MARK: - Selection State Tests
+
+    @Test("2-Icon: Selection states 0 and 1")
+    func testTwoIconSelectionStates() {
+        var selection0 = 0
+        var selection1 = 1
+
         _ = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
-            vertical: true
+            selection: .init(get: { selection0 }, set: { selection0 = $0 })
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        #expect(value == false)
+        #expect(selection0 == 0)
+
+        _ = SlidingToggleButton(
+            selection: .init(get: { selection1 }, set: { selection1 = $0 })
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
+        }
+        #expect(selection1 == 1)
+    }
+
+    @Test("3-Icon: Selection states 0, 1, and 2")
+    func testThreeIconSelectionStates() {
+        var selection0 = 0
+        var selection1 = 1
+        var selection2 = 2
+
+        _ = SlidingToggleButton(
+            selection: .init(get: { selection0 }, set: { selection0 = $0 })
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
+        }
+        #expect(selection0 == 0)
+
+        _ = SlidingToggleButton(
+            selection: .init(get: { selection1 }, set: { selection1 = $0 })
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
+        }
+        #expect(selection1 == 1)
+
+        _ = SlidingToggleButton(
+            selection: .init(get: { selection2 }, set: { selection2 = $0 })
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
+        }
+        #expect(selection2 == 2)
     }
 
     // MARK: - Body Generation Tests
 
-    @Test("Body generates View for horizontal configuration")
-    func testHorizontalBodyGeneration() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 })
+    @Test("2-Icon and 3-Icon: Body generates View for horizontal and vertical")
+    func testBodyGeneration() {
+        var selection = 0
+
+        // 2-Icon horizontal
+        let twoIconH = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 })
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        _ = button.body
-        #expect(button.vertical == false)
-    }
+        _ = twoIconH.body
+        #expect(twoIconH.vertical == false)
 
-    @Test("Body generates View for vertical configuration")
-    func testVerticalBodyGeneration() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
+        // 2-Icon vertical
+        let twoIconV = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
             vertical: true
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        _ = button.body
-        #expect(button.vertical == true)
+        _ = twoIconV.body
+        #expect(twoIconV.vertical == true)
+
+        // 3-Icon horizontal
+        let threeIconH = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 })
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
+        }
+        _ = threeIconH.body
+        #expect(threeIconH.vertical == false)
+
+        // 3-Icon vertical
+        let threeIconV = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
+            vertical: true
+        ) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
+        }
+        _ = threeIconV.body
+        #expect(threeIconV.vertical == true)
     }
 
     // MARK: - Edge Cases
 
-    @Test("Initialization with zero size")
-    func testZeroSizeInitialization() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
+    @Test("Edge cases: zero size, zero padding, large size")
+    func testEdgeCases() {
+        var selection = 0
+
+        let zeroSize = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
             size: 0
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        #expect(button.size == 0)
-    }
+        #expect(zeroSize.size == 0)
 
-    @Test("Initialization with zero padding")
-    func testZeroPaddingInitialization() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
+        let zeroPadding = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
             padding: 0
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        #expect(button.padding == 0)
-    }
+        #expect(zeroPadding.padding == 0)
 
-    @Test("Initialization with large size")
-    func testLargeSizeInitialization() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
+        let largeSize = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 }),
             size: 1000
         ) {
             Image(systemName: "sun.max.fill")
             Image(systemName: "moon.fill")
         }
-        #expect(button.size == 1000)
+        #expect(largeSize.size == 1000)
+    }
+
+    @Test("2-Icon and 3-Icon: Custom view icons")
+    func testCustomViewIcons() {
+        var selection = 0
+
+        let twoIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 })
+        ) {
+            Circle().fill(.yellow)
+            Rectangle().fill(.blue)
+        }
+        #expect(twoIcon.size == SlidingToggleButtonDefaults.defaultSize)
+
+        let threeIcon = SlidingToggleButton(
+            selection: .init(get: { selection }, set: { selection = $0 })
+        ) {
+            Circle().fill(.yellow)
+            Circle().fill(.gray)
+            Circle().fill(.blue)
+        }
+        #expect(threeIcon.size == SlidingToggleButtonDefaults.defaultSize)
     }
 
     @Test("Different SF Symbol icons work correctly")
     func testDifferentSFSymbolIcons() {
-        var value = false
+        var selection = 0
+
         let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 })
+            selection: .init(get: { selection }, set: { selection = $0 })
         ) {
             Image(systemName: "play.fill")
             Image(systemName: "pause.fill")
         }
         _ = button.body
-        #expect(value == false)
-    }
-
-    @Test("Initialization with custom view icons")
-    func testCustomViewIconInitialization() {
-        var value = false
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 })
-        ) {
-            Circle().fill(.yellow)
-            Rectangle().fill(.blue)
-        }
-        #expect(button.size == SlidingToggleButtonDefaults.defaultSize)
-        #expect(button.padding == SlidingToggleButtonDefaults.padding)
-        #expect(button.vertical == SlidingToggleButtonDefaults.vertical)
-    }
-
-    @Test("Initialization with mixed icon types")
-    func testMixedIconTypes() {
-        var value = true
-        let button = SlidingToggleButton(
-            value: .init(get: { value }, set: { value = $0 }),
-            size: 32,
-            vertical: true
-        ) {
-            Image(systemName: "sun.max.fill")
-            Circle().fill(.gray)
-        }
-        #expect(button.size == 32)
-        #expect(button.vertical == true)
+        #expect(selection == 0)
     }
 }

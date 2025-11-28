@@ -1,6 +1,6 @@
 # SlidingToggleButton
 
-A minimal sliding SwiftUI toggle button.
+A minimal sliding SwiftUI toggle button with support for 2 or 3 states.
 
 https://github.com/user-attachments/assets/5ce70903-8e6a-40a8-a2c2-40c88b513571
 
@@ -22,18 +22,21 @@ https://github.com/TahaTesser/SlidingToggleButton.git
 import SlidingToggleButton
 
 struct ContentView: View {
-    @State private var isDarkMode = false
+    @State private var twoIconSelection = 0
+    @State private var threeIconSelection = 0
 
     var body: some View {
-        HStack {
-            // Horizontal Sliding Toggle Button
-            SlidingToggleButton(value: $isDarkMode) {
+        VStack {
+            // 2-Icon Toggle
+            SlidingToggleButton(selection: $twoIconSelection) {
                 Image(systemName: "sun.max.fill")
                 Image(systemName: "moon.fill")
             }
-            // Vertical Sliding Toggle Button
-            SlidingToggleButton(value: $isDarkMode, vertical: true) {
+            
+            // 3-Icon Toggle
+            SlidingToggleButton(selection: $threeIconSelection) {
                 Image(systemName: "sun.max.fill")
+                Image(systemName: "circle.lefthalf.filled")
                 Image(systemName: "moon.fill")
             }
         }
@@ -41,16 +44,21 @@ struct ContentView: View {
 }
 ```
 
-The icons are provided in a trailing closure:
-- First view: start icon (true state)
-- Second view: end icon (false state)
+Selection values: `0` (start), `1` (center for 3-icon), `2` (end for 3-icon)
 
-`Image` views are automatically resizable. You can also use custom views:
+### Customization
 
 ```swift
-SlidingToggleButton(value: $isOn) {
-    Circle().fill(.yellow)
-    Circle().fill(.blue)
+SlidingToggleButton(
+    selection: $selection,
+    size: 32,
+    padding: 12,
+    backgroundColor: .blue.opacity(0.3),
+    buttonBackgroundColor: .blue.opacity(0.6),
+    vertical: true
+) {
+    Image(systemName: "sun.max.fill")
+    Image(systemName: "moon.fill")
 }
 ```
 
@@ -63,53 +71,13 @@ SlidingToggleButton(value: $isOn) {
 
 **Swift Version:** 5.9+ (Swift 6 compatible)
 
-### API Dependencies
-
-The following iOS 17+/macOS 14+ APIs are used:
-- `phaseAnimator` - For icon bounce animations
-- `symbolEffect(.bounce.byLayer)` - For SF Symbol effects
-- `containerShape` - For tap gesture shape
-- `onChange(of:)` - New simplified syntax
-
-## Specifications
-
-![SlidingToggleButton_Specs.png](./Docs/SlidingToggleButton_Specs.png)
-
-### Measurements (Horizontal)
-
-| Attribute | Value |
-|-----------|-------|
-| Container Width | 48 pixels |
-| Container Height | 24 pixels |
-| Button Shape Size | 24 x 24 pixels |
-| Icon Size | 18 x 18 pixels |
-| Icon Padding | 8 pixels (All Sides) |
-
-### Measurements (Vertical)
-
-| Attribute | Value |
-|-----------|-------|
-| Container Width | 24 pixels |
-| Container Height | 48 pixels |
-| Button Shape Size | 24 x 24 pixels |
-| Icon Size | 18 x 18 pixels |
-| Icon Padding | 8 pixels (All Sides) |
-
-### Colors
-
-| Attribute | Value |
-|-----------|-------|
-| Container Background Color | `.secondary.opacity(0.3)` |
-| Button Background Color | `.primary.opacity(0.4)` |
-| Icon Color | `.white` |
-
 ## Performance
 
-| Metric | Value |
-|--------|-------|
-| First Render | 0.57ms |
-| State Toggle | 0.02ms |
-| Memory | 152 bytes |
+| Metric | 2-Icon | 3-Icon |
+|--------|--------|--------|
+| First Render | 0.48ms | 0.50ms |
+| State Toggle | 0.03ms | 0.02ms |
+| Memory | 96 bytes | 96 bytes |
 
 Optimized for 60fps rendering. See [Benchmark Results](./Docs/BenchmarkResults.md) for details.
 

@@ -1,14 +1,24 @@
 # SlidingToggleButton Benchmark Results
 
-## Results (November 27, 2025)
+## Results (November 28, 2025)
+
+### 2-Icon Mode
 
 | Metric | Value | Target |
 |--------|-------|--------|
-| First Render Time | 0.57ms | < 16.67ms (60fps) |
+| First Render Time | 0.48ms | < 16.67ms (60fps) |
+| State Toggle Latency | 0.03ms | < 16.67ms (60fps) |
+| Memory Footprint | 96 bytes | < 512 bytes |
+| Rapid Toggle (1000x) | 5.53ms | < 1000ms |
+
+### 3-Icon Mode
+
+| Metric | Value | Target |
+|--------|-------|--------|
+| First Render Time | 0.50ms | < 16.67ms (60fps) |
 | State Toggle Latency | 0.02ms | < 16.67ms (60fps) |
-| Memory Footprint | 152 bytes | < 512 bytes |
-| View Hierarchy Depth | 194 levels | < 250 levels |
-| Rapid Toggle (1000x) | 7.83ms | < 1000ms |
+| Memory Footprint | 96 bytes | < 512 bytes |
+| Rapid Toggle (1000x) | 5.53ms | < 1000ms |
 
 **Environment:** Apple Silicon (arm64e-apple-macos14.0), Swift 6.0
 

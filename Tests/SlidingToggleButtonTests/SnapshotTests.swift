@@ -9,134 +9,100 @@ import UIKit
 import AppKit
 #endif
 
-// MARK: - Test Wrapper
-
-struct SnapshotTestWrapper<StartIcon: View, EndIcon: View>: View {
-    @State var value: Bool
-    let size: CGFloat?
-    let padding: CGFloat?
-    let backgroundColor: Color?
-    let buttonBackgroundColor: Color?
-    let vertical: Bool
-    let startIcon: StartIcon
-    let endIcon: EndIcon
-
-    init(
-        value: Bool = false,
-        size: CGFloat? = nil,
-        padding: CGFloat? = nil,
-        backgroundColor: Color? = nil,
-        buttonBackgroundColor: Color? = nil,
-        vertical: Bool = false,
-        @ViewBuilder icons: () -> TupleView<(StartIcon, EndIcon)>
-    ) {
-        self._value = State(initialValue: value)
-        self.size = size
-        self.padding = padding
-        self.backgroundColor = backgroundColor
-        self.buttonBackgroundColor = buttonBackgroundColor
-        self.vertical = vertical
-        let iconViews = icons().value
-        self.startIcon = iconViews.0
-        self.endIcon = iconViews.1
-    }
-
-    var body: some View {
-        SlidingToggleButton(
-            value: $value,
-            size: size,
-            padding: padding,
-            backgroundColor: backgroundColor,
-            buttonBackgroundColor: buttonBackgroundColor,
-            vertical: vertical
-        ) {
-            startIcon
-            endIcon
-        }
-        .padding(20)
-        .background(Color.gray.opacity(0.2))
-    }
-}
-
 // Set to true to record new snapshots
 let isRecording = false
 
-// MARK: - Horizontal Snapshot Tests
+// MARK: - Snapshot Tests
 
-@Suite("SlidingToggleButton Horizontal Snapshot Tests")
+@Suite("SlidingToggleButton Snapshot Tests")
 @MainActor
-struct HorizontalSnapshotTests {
+struct SnapshotTests {
 
-    @Test("Horizontal - Default - Value False")
-    func testHorizontalDefaultFalse() {
-        let view = SnapshotTestWrapper(value: false) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
+    // MARK: - 2-Icon Tests
+
+    @Test("2-Icon: Horizontal selections")
+    func testTwoIconHorizontal() {
+        for selection in [0, 1] {
+            let view = TwoIconWrapper(selection: selection)
+            let name = "selection-\(selection)"
+            #if os(iOS)
+            assertSnapshot(of: view, as: .image(layout: .sizeThatFits), named: name, record: isRecording)
+            #elseif os(macOS)
+            let hostingView = NSHostingView(rootView: view)
+            hostingView.frame = CGRect(x: 0, y: 0, width: 150, height: 100)
+            assertSnapshot(of: hostingView, as: .image, named: name, record: isRecording)
+            #endif
         }
+    }
+
+    @Test("2-Icon: Vertical selections")
+    func testTwoIconVertical() {
+        for selection in [0, 1] {
+            let view = TwoIconWrapper(selection: selection, vertical: true)
+            let name = "selection-\(selection)"
+            #if os(iOS)
+            assertSnapshot(of: view, as: .image(layout: .sizeThatFits), named: name, record: isRecording)
+            #elseif os(macOS)
+            let hostingView = NSHostingView(rootView: view)
+            hostingView.frame = CGRect(x: 0, y: 0, width: 100, height: 150)
+            assertSnapshot(of: hostingView, as: .image, named: name, record: isRecording)
+            #endif
+        }
+    }
+
+    // MARK: - 3-Icon Tests
+
+    @Test("3-Icon: Horizontal selections")
+    func testThreeIconHorizontal() {
+        for selection in [0, 1, 2] {
+            let view = ThreeIconWrapper(selection: selection)
+            let name = "selection-\(selection)"
+            #if os(iOS)
+            assertSnapshot(of: view, as: .image(layout: .sizeThatFits), named: name, record: isRecording)
+            #elseif os(macOS)
+            let hostingView = NSHostingView(rootView: view)
+            hostingView.frame = CGRect(x: 0, y: 0, width: 200, height: 100)
+            assertSnapshot(of: hostingView, as: .image, named: name, record: isRecording)
+            #endif
+        }
+    }
+
+    @Test("3-Icon: Vertical selections")
+    func testThreeIconVertical() {
+        for selection in [0, 1, 2] {
+            let view = ThreeIconWrapper(selection: selection, vertical: true)
+            let name = "selection-\(selection)"
+            #if os(iOS)
+            assertSnapshot(of: view, as: .image(layout: .sizeThatFits), named: name, record: isRecording)
+            #elseif os(macOS)
+            let hostingView = NSHostingView(rootView: view)
+            hostingView.frame = CGRect(x: 0, y: 0, width: 100, height: 200)
+            assertSnapshot(of: hostingView, as: .image, named: name, record: isRecording)
+            #endif
+        }
+    }
+
+    // MARK: - Customization Tests
+
+    @Test("Custom size and padding")
+    func testCustomSizeAndPadding() {
+        let view = TwoIconWrapper(selection: 0, size: 48, padding: 16)
         #if os(iOS)
         assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
         #elseif os(macOS)
         let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 150, height: 100)
+        hostingView.frame = CGRect(x: 0, y: 0, width: 220, height: 150)
         assertSnapshot(of: hostingView, as: .image, record: isRecording)
         #endif
     }
 
-    @Test("Horizontal - Default - Value True")
-    func testHorizontalDefaultTrue() {
-        let view = SnapshotTestWrapper(value: true) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
-        }
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 150, height: 100)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
-    }
-
-    @Test("Horizontal - Custom Size")
-    func testHorizontalCustomSize() {
-        let view = SnapshotTestWrapper(value: false, size: 48) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
-        }
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 200, height: 150)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
-    }
-
-    @Test("Horizontal - Custom Padding")
-    func testHorizontalCustomPadding() {
-        let view = SnapshotTestWrapper(value: false, padding: 16) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
-        }
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 180, height: 120)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
-    }
-
-    @Test("Horizontal - Custom Colors")
-    func testHorizontalCustomColors() {
-        let view = SnapshotTestWrapper(
-            value: false,
+    @Test("Custom colors")
+    func testCustomColors() {
+        let view = TwoIconWrapper(
+            selection: 0,
             backgroundColor: .blue.opacity(0.3),
             buttonBackgroundColor: .red.opacity(0.5)
-        ) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
-        }
+        )
         #if os(iOS)
         assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
         #elseif os(macOS)
@@ -145,114 +111,43 @@ struct HorizontalSnapshotTests {
         assertSnapshot(of: hostingView, as: .image, record: isRecording)
         #endif
     }
-}
 
-// MARK: - Vertical Snapshot Tests
+    // MARK: - Programmatic Update Tests
 
-@Suite("SlidingToggleButton Vertical Snapshot Tests")
-@MainActor
-struct VerticalSnapshotTests {
-
-    @Test("Vertical - Default - Value False")
-    func testVerticalDefaultFalse() {
-        let view = SnapshotTestWrapper(value: false, vertical: true) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
+    @Test("Programmatic selection update")
+    func testProgrammaticUpdate() {
+        // Test that programmatic selection changes position the button correctly
+        // This verifies the fix for animated state updates
+        for targetSelection in [0, 1, 2] {
+            let view = ProgrammaticUpdateWrapper(initialSelection: 0, targetSelection: targetSelection)
+            let name = "target-\(targetSelection)"
+            #if os(iOS)
+            assertSnapshot(of: view, as: .image(layout: .sizeThatFits), named: name, record: isRecording)
+            #elseif os(macOS)
+            let hostingView = NSHostingView(rootView: view)
+            hostingView.frame = CGRect(x: 0, y: 0, width: 200, height: 100)
+            assertSnapshot(of: hostingView, as: .image, named: name, record: isRecording)
+            #endif
         }
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 100, height: 150)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
     }
 
-    @Test("Vertical - Default - Value True")
-    func testVerticalDefaultTrue() {
-        let view = SnapshotTestWrapper(value: true, vertical: true) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
-        }
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 100, height: 150)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
-    }
+    // MARK: - Combined View Test
 
-    @Test("Vertical - Custom Size")
-    func testVerticalCustomSize() {
-        let view = SnapshotTestWrapper(value: false, size: 48, vertical: true) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
-        }
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 150, height: 200)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
-    }
-
-    @Test("Vertical - Custom Padding")
-    func testVerticalCustomPadding() {
-        let view = SnapshotTestWrapper(value: false, padding: 16, vertical: true) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
-        }
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 120, height: 180)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
-    }
-
-    @Test("Vertical - Custom Colors")
-    func testVerticalCustomColors() {
-        let view = SnapshotTestWrapper(
-            value: false,
-            backgroundColor: .green.opacity(0.3),
-            buttonBackgroundColor: .purple.opacity(0.5),
-            vertical: true
-        ) {
-            Image(systemName: "sun.max.fill")
-            Image(systemName: "moon.fill")
-        }
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 100, height: 150)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
-    }
-}
-
-// MARK: - Combined Snapshot Tests
-
-@Suite("SlidingToggleButton Combined Snapshot Tests")
-@MainActor
-struct CombinedSnapshotTests {
-
-    @Test("Horizontal and Vertical Side by Side")
-    func testHorizontalAndVerticalSideBySide() {
+    @Test("2-Icon and 3-Icon side by side")
+    func testCombinedView() {
         struct CombinedView: View {
-            @State var value = false
+            @State var twoIcon = 0
+            @State var threeIcon = 1
 
             var body: some View {
                 HStack(spacing: 20) {
-                    SlidingToggleButton(value: $value) {
+                    SlidingToggleButton(selection: $twoIcon) {
                         Image(systemName: "sun.max.fill")
                         Image(systemName: "moon.fill")
                     }
-                    SlidingToggleButton(value: $value, vertical: true) {
+                    SlidingToggleButton(selection: $threeIcon) {
                         Image(systemName: "sun.max.fill")
+                        Image(systemName: "circle.lefthalf.filled")
                         Image(systemName: "moon.fill")
                     }
                 }
@@ -266,90 +161,95 @@ struct CombinedSnapshotTests {
         assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
         #elseif os(macOS)
         let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 250, height: 150)
+        hostingView.frame = CGRect(x: 0, y: 0, width: 300, height: 100)
         assertSnapshot(of: hostingView, as: .image, record: isRecording)
         #endif
     }
+}
 
-    @Test("Full Custom Configuration")
-    func testFullCustomConfiguration() {
-        let view = SnapshotTestWrapper(
-            value: true,
-            size: 36,
-            padding: 12,
-            backgroundColor: .orange.opacity(0.3),
-            buttonBackgroundColor: .cyan.opacity(0.5),
-            vertical: false
+// MARK: - Test Wrappers
+
+private struct TwoIconWrapper: View {
+    @State var selection: Int
+    var size: CGFloat?
+    var padding: CGFloat?
+    var backgroundColor: Color?
+    var buttonBackgroundColor: Color?
+    var vertical: Bool
+
+    init(
+        selection: Int = 0,
+        size: CGFloat? = nil,
+        padding: CGFloat? = nil,
+        backgroundColor: Color? = nil,
+        buttonBackgroundColor: Color? = nil,
+        vertical: Bool = false
+    ) {
+        self._selection = State(initialValue: selection)
+        self.size = size
+        self.padding = padding
+        self.backgroundColor = backgroundColor
+        self.buttonBackgroundColor = buttonBackgroundColor
+        self.vertical = vertical
+    }
+
+    var body: some View {
+        SlidingToggleButton(
+            selection: $selection,
+            size: size,
+            padding: padding,
+            backgroundColor: backgroundColor,
+            buttonBackgroundColor: buttonBackgroundColor,
+            vertical: vertical
         ) {
-            Image(systemName: "play.fill")
-            Image(systemName: "pause.fill")
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "moon.fill")
         }
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 200, height: 120)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
+        .padding(20)
+        .background(Color.gray.opacity(0.2))
+    }
+}
+
+private struct ThreeIconWrapper: View {
+    @State var selection: Int
+    var vertical: Bool
+
+    init(selection: Int = 0, vertical: Bool = false) {
+        self._selection = State(initialValue: selection)
+        self.vertical = vertical
     }
 
-    @Test("Different Icons Configuration")
-    func testDifferentIconsConfiguration() {
-        struct IconsView: View {
-            @State var value = false
-
-            var body: some View {
-                VStack(spacing: 20) {
-                    SlidingToggleButton(value: $value) {
-                        Image(systemName: "sun.max.fill")
-                        Image(systemName: "moon.fill")
-                    }
-                    SlidingToggleButton(value: $value) {
-                        Image(systemName: "play.fill")
-                        Image(systemName: "pause.fill")
-                    }
-                    SlidingToggleButton(value: $value) {
-                        Image(systemName: "speaker.wave.3.fill")
-                        Image(systemName: "speaker.slash.fill")
-                    }
-                }
-                .padding(20)
-                .background(Color.gray.opacity(0.2))
-            }
+    var body: some View {
+        SlidingToggleButton(selection: $selection, vertical: vertical) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
         }
+        .padding(20)
+        .background(Color.gray.opacity(0.2))
+    }
+}
 
-        let view = IconsView()
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 200, height: 250)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
+private struct ProgrammaticUpdateWrapper: View {
+    @State var selection: Int
+    let targetSelection: Int
+
+    init(initialSelection: Int, targetSelection: Int) {
+        self._selection = State(initialValue: initialSelection)
+        self.targetSelection = targetSelection
     }
 
-    @Test("Custom View Icons")
-    func testCustomViewIcons() {
-        struct CustomIconsView: View {
-            @State var value = false
-
-            var body: some View {
-                SlidingToggleButton(value: $value) {
-                    Circle().fill(.yellow)
-                    Circle().fill(.blue)
-                }
-                .padding(20)
-                .background(Color.gray.opacity(0.2))
-            }
+    var body: some View {
+        SlidingToggleButton(selection: $selection) {
+            Image(systemName: "sun.max.fill")
+            Image(systemName: "circle.lefthalf.filled")
+            Image(systemName: "moon.fill")
         }
-
-        let view = CustomIconsView()
-        #if os(iOS)
-        assertSnapshot(of: view, as: .image(layout: .sizeThatFits), record: isRecording)
-        #elseif os(macOS)
-        let hostingView = NSHostingView(rootView: view)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 150, height: 100)
-        assertSnapshot(of: hostingView, as: .image, record: isRecording)
-        #endif
+        .padding(20)
+        .background(Color.gray.opacity(0.2))
+        .onAppear {
+            // Programmatically update selection (simulates external state change)
+            selection = targetSelection
+        }
     }
 }
