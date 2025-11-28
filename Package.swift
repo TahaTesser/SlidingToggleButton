@@ -21,8 +21,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "SlidingToggleButton",
-            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLint")]
+            name: "SlidingToggleButton"
         ),
         .testTarget(
             name: "SlidingToggleButtonTests",
