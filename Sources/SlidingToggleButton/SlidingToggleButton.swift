@@ -2,15 +2,26 @@ import SwiftUI
 
 // MARK: - SlidingToggleButton
 
+/// A minimal SwiftUI toggle that slides a highlight across 2–3 icons.
+///
+/// The view renders the provided icons inside a capsule and animates an
+/// indicator circle between positions when the selection changes. Use the
+/// `selection` binding to read and update the selected index (0-based) and
+/// configure layout with the public properties or the initializer defaults.
 public struct SlidingToggleButton: View {
     @Binding private var selection: Int
     @State private var buttonAlignment: Alignment
     @State private var animationTriggers: [Bool]
 
+    /// The width and height of each icon.
     public let size: CGFloat
+    /// The padding around each icon inside the capsule.
     public let padding: CGFloat
+    /// The capsule background color behind the indicator circle.
     public let backgroundColor: Color
+    /// The indicator circle color that highlights the active icon.
     public let buttonBackgroundColor: Color
+    /// Whether icons are stacked vertically instead of horizontally.
     public let vertical: Bool
 
     private let icons: [AnyView]
@@ -19,6 +30,15 @@ public struct SlidingToggleButton: View {
     // MARK: - 2-Icon Initializer
 
     /// Creates a sliding toggle button with two icons.
+    ///
+    /// - Parameters:
+    ///   - selection: The currently selected icon index. Updates on tap.
+    ///   - size: Optional override for icon size. Defaults to 24.
+    ///   - padding: Optional override for icon padding. Defaults to 8.
+    ///   - backgroundColor: Optional override for the capsule background.
+    ///   - buttonBackgroundColor: Optional override for the indicator circle.
+    ///   - vertical: Render vertically when `true`, horizontally otherwise.
+    ///   - icons: A builder that returns two icons, e.g. two SF Symbols.
     public init<Icon0: View, Icon1: View>(
         selection: Binding<Int>,
         size: CGFloat? = nil,
@@ -43,6 +63,15 @@ public struct SlidingToggleButton: View {
     // MARK: - 3-Icon Initializer
 
     /// Creates a sliding toggle button with three icons.
+    ///
+    /// - Parameters:
+    ///   - selection: The currently selected icon index. Updates on tap.
+    ///   - size: Optional override for icon size. Defaults to 24.
+    ///   - padding: Optional override for icon padding. Defaults to 8.
+    ///   - backgroundColor: Optional override for the capsule background.
+    ///   - buttonBackgroundColor: Optional override for the indicator circle.
+    ///   - vertical: Render vertically when `true`, horizontally otherwise.
+    ///   - icons: A builder that returns three icons, e.g. three SF Symbols.
     public init<Icon0: View, Icon1: View, Icon2: View>(
         selection: Binding<Int>,
         size: CGFloat? = nil,
