@@ -29,6 +29,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Fetch SwiftPackageScripts
+        run: |
+          git clone https://github.com/danielsaidi/SwiftPackageScripts.git /tmp/SwiftPackageScripts
+          mkdir -p scripts
+          rsync -a /tmp/SwiftPackageScripts/scripts/ ./scripts/
+          chmod +x ./scripts/*.sh
+
       - name: Configure Pages
         uses: actions/configure-pages@v4
 
